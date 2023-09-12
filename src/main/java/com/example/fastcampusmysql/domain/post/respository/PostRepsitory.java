@@ -1,13 +1,12 @@
 package com.example.fastcampusmysql.domain.post.respository;
 
-import com.example.fastcampusmysql.domain.PageHelper;
+import com.example.fastcampusmysql.util.PageHelper;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.entitiy.Post;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
@@ -57,6 +56,7 @@ public class PostRepsitory {
         return namedParameterJdbcTemplate.query(SQL, params,DAILY_POST_COUNT_MAPPER);
     }
 
+
     public Page<Post> findAllByMemberId(Long memberId, Pageable Pageable){
         // page와 pageRequest 사용하는 이유는 함수 이름을 Spring DATA JPA naming 방식을 따라가려함.
         //Pageable 사용가능한데, 어차피 PageRequest 인터페이스를 구현한 것이 저것임.
@@ -87,6 +87,20 @@ public class PostRepsitory {
 
         var params = new MapSqlParameterSource().addValue("memberId", memberId);
         return namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
+    }
+
+    public List<Post> findAllByMemberIdAndOrderByIdDesc(Long memberId, int size){
+        var sql = String.format("""
+                Select *
+                From %s
+                WHERE :memberId = :memberId
+                ORDER BY id desc
+                LIMIT :size
+                """, Table);
+
+        var params = new MapSqlParameterSource().addValue("memberId", memberId).addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
 
     public Post save(Post post){

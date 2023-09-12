@@ -4,6 +4,7 @@ import com.example.fastcampusmysql.domain.post.dto.DailyPostCount;
 import com.example.fastcampusmysql.domain.post.dto.DailyPostCountRequest;
 import com.example.fastcampusmysql.domain.post.entitiy.Post;
 import com.example.fastcampusmysql.domain.post.respository.PostRepsitory;
+import com.example.fastcampusmysql.util.CursorRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +31,10 @@ public class PostReadService {
 
     public Page<Post> getPosts(Long memberId, Pageable pageRequest){
         return postRepsitory.findAllByMemberId(memberId, pageRequest);
+
+    }
+
+    public Page<Post> getPosts(Long memberId, CursorRequest cursorRequest){
 
     }
 
