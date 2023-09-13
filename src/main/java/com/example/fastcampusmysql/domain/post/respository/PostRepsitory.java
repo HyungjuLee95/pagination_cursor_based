@@ -93,12 +93,45 @@ public class PostRepsitory {
         var sql = String.format("""
                 Select *
                 From %s
-                WHERE :memberId = :memberId
+                WHERE memberId = :memberId
                 ORDER BY id desc
                 LIMIT :size
                 """, Table);
 
         var params = new MapSqlParameterSource().addValue("memberId", memberId).addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
+    }
+
+    public List<Post> findAllByInMemberIdAndOrderByIdDesc(List<Long> memberIds, int size){
+        if(memberIds.isEmpty()){
+            return List.of();
+        }
+        var sql = String.format("""
+                Select *
+                From %s
+                WHERE memberId in (:memberIds)
+                ORDER BY id desc
+                LIMIT :size
+                """, Table);
+
+        var params = new MapSqlParameterSource()
+                .addValue("memberIds", memberIds)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
+    }
+
+    public List<Post> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size){
+        var sql = String.format("""
+                Select *
+                From %s
+                WHERE :memberId = :memberId AND id < :id
+                ORDER BY id desc
+                LIMIT :size
+                """, Table);
+
+        var params = new MapSqlParameterSource().addValue("memberId", memberId).addValue("size", size).addValue("id", id);
 
         return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
@@ -110,6 +143,24 @@ public class PostRepsitory {
         }
         throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
     }
+
+    public List<Post> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, int size){
+        if(memberIds.isEmpty()){
+            return List.of();
+        }
+        var sql = String.format("""
+                Select *
+                From %s
+                WHERE memberId in (:memberIds) AND id < :id
+                ORDER BY id desc
+                LIMIT :size
+                """, Table);
+
+        var params = new MapSqlParameterSource().addValue("memberIds", memberIds).addValue("size", size).addValue("id", id);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
+    }
+
 
     public void bulkInsert(List<Post> posts) {
         var sql = String.format("""
