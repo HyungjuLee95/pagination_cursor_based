@@ -32,6 +32,7 @@ public class MemberRepository {
             //getObject 지네릭 타입을 이용하여 우리가 추출하기 원하는 클래스 레퍼런스를 넣어주면 변환해주는 메서드
             .createdat(resuleSet.getObject("createdat", LocalDateTime.class))
             .build();
+
     public Optional<Member> findById(Long id){
     var sql = String.format("SELECT * FROM %s WHERE id = :id",TABLE);
     var param = new MapSqlParameterSource()

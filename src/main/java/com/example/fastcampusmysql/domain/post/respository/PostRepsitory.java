@@ -131,7 +131,10 @@ public class PostRepsitory {
                 LIMIT :size
                 """, Table);
 
-        var params = new MapSqlParameterSource().addValue("memberId", memberId).addValue("size", size).addValue("id", id);
+        var params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("size", size)
+                .addValue("id", id);
 
         return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
     }
@@ -143,6 +146,23 @@ public class PostRepsitory {
         }
         throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
     }
+
+    public List<Post> findAllByInid(List<Long> ids){
+        if(ids.isEmpty()){
+            return List.of();
+        }
+
+        var sql = String.format("""
+                Select *
+                From %s
+                WHERE id in (:ids)            
+                """, Table);
+
+        var params = new MapSqlParameterSource().addValue("ids", ids);
+
+        return namedParameterJdbcTemplate.query(sql, params, ROW_MAPPER);
+    }
+
 
     public List<Post> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, int size){
         if(memberIds.isEmpty()){

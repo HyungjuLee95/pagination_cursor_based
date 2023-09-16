@@ -37,8 +37,16 @@ public class PostReadService {
 
     public PageCursor<Post> getPosts(Long memberId, CursorRequest cursorRequest){
         var posts = findAllBy(memberId, cursorRequest);
-        var nextKey = posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
+        var nextKey = getNextKey(posts);
         return new PageCursor<>(cursorRequest.next(nextKey), posts);
+    }
+
+    public List<Post> getPosts(List<Long> ids){
+        return postRepsitory.findAllByInid(ids);
+    }
+
+    private static long getNextKey(List<Post> posts) {
+        return posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
     }
 
     public PageCursor<Post> getPosts(List<Long> memberIds, CursorRequest cursorRequest){
